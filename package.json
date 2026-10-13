@@ -1,0 +1,11 @@
+{
+  "name": "time-tracking-app",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Lightweight browser-based time tracker (MVP)",
+  "scripts": {
+    "start": "npx serve src",
+    "test": "node --test"
+  }
+}
