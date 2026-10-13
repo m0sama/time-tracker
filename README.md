@@ -4,7 +4,11 @@ A lightweight, browser-based app for logging time spent on personal projects. It
 
 ## Status
 
-MVP in progress. See [02-strategy/mvp-scope.md](02-strategy/mvp-scope.md) for what is in and out.
+MVP live. See [02-strategy/mvp-scope.md](02-strategy/mvp-scope.md) for what is in and out.
+
+Live app: https://time-tracker.mohamed-osama-795.workers.dev
+
+Entries are stored in each browser on each device, so phone and laptop data are separate. Use the JSON export to move data between them.
 
 ## Run locally
 
