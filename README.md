@@ -12,6 +12,9 @@ The original address, https://time-tracker.mohamed-osama-795.workers.dev, still 
 
 Entries are stored in each browser on each device, so phone and laptop data are separate. Use the JSON export to move data between them.
 
+## How it was built
+The [build log](release/build-log.md) records every release: what triggered it, what was decided and why, and how it was checked.
+
 ## Run locally
 
 Requires Node.js (for the test runner and a local static server).
