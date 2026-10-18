@@ -6,7 +6,9 @@ A lightweight, browser-based app for logging time spent on personal projects. It
 
 MVP live. See [02-strategy/mvp-scope.md](02-strategy/mvp-scope.md) for what is in and out.
 
-Live app: https://time-tracker.mohamed-osama-795.workers.dev
+Live app: https://time.mohamedyoussef.dev
+
+The original address, https://time-tracker.mohamed-osama-795.workers.dev, still works. Its home page has a **Move my data** button that carries your entries to the new address ([ADR 006](02-strategy/decisions/006-custom-domain-and-data-move.md)).
 
 Entries are stored in each browser on each device, so phone and laptop data are separate. Use the JSON export to move data between them.
 

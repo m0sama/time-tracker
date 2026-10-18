@@ -3,5 +3,11 @@
   "compatibility_date": "2026-10-01",
   "assets": {
     "directory": "./src"
-  }
+  },
+  // Main address. The workers.dev address stays on so existing browsers keep their data
+  // and can hand it over with "Move my data" (ADR 006).
+  "workers_dev": true,
+  "routes": [
+    { "pattern": "time.mohamedyoussef.dev", "custom_domain": true }
+  ]
 }

@@ -11,6 +11,7 @@
 - Export all data as a JSON file.
 - Responsive layout that works on phones.
 - Data persists in the browser between visits.
+- Served at time.mohamedyoussef.dev, with a one-tap move of existing data from the old workers.dev address ([006](decisions/006-custom-domain-and-data-move.md)).
 
 ## Out of scope (deliberately deferred)
 - Live timer or start and stop tracking. The app records hours you enter, not clock time.
@@ -18,9 +19,8 @@
 - Sync across devices or a backend database.
 - Renaming or deleting projects. Not needed yet.
 - Reports, charts, date-range filters, CSV export.
-- Import from JSON.
+- General import from a JSON file. (A one-time move from the old address is in scope; see [006](decisions/006-custom-domain-and-data-move.md).)
 - Offline install (PWA). Revisit after hosting is live.
-- Custom domain.
 
 ## Known limitation
 Data lives in each browser on each device. Entries logged on a phone do not appear on a laptop. The workaround for now is to log from one device, or export and compare manually. Fixing this needs a backend, which is a later decision (see [002](decisions/002-no-backend-for-mvp.md)).

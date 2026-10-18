@@ -2,7 +2,7 @@
 
 **Status:** Accepted
 
-**Live URL:** https://time-tracker.mohamed-osama-795.workers.dev
+**Live URL:** https://time.mohamedyoussef.dev (since 2026-10-18, see [006](006-custom-domain-and-data-move.md)). Originally https://time-tracker.mohamed-osama-795.workers.dev, which still works.
 
 ## Context
 The app needs a free public HTTPS URL, no domain required, reachable from a phone. The source code should be easy to redeploy.

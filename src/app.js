@@ -1,4 +1,5 @@
 import { createStore } from "./store.js";
+import { HANDOFF_PREFIX, NEW_ORIGIN, decodeHandoff, handoffUrl, isOldAddress } from "./move.js";
 import {
   aggregateEntries,
   buildMonthGrid,
@@ -36,6 +37,7 @@ const ICONS = {
 };
 
 let pageError = "";
+let pageNotice = ""; // success message, such as after moving data to the new address
 let editingId = null;
 let calendarView = { year: 0, month: 0 }; // month shown in the entry form's date picker, 0-based
 let view = "month"; // project page view: "month" (collapsible tree) or "calendar"
@@ -92,6 +94,7 @@ function renderHome(data) {
   );
 
   return [
+    ...(isOldAddress(location.hostname) ? [movedBanner(data)] : []),
     el("h1", { className: "headline-small", text: "Projects" }),
     form,
     ...(data.projects.length === 0
@@ -105,6 +108,37 @@ function renderHome(data) {
       }),
     ]),
   ];
+}
+
+// Shown only on the old workers.dev address. Data there is never deleted, so it stays as a backup.
+function movedBanner(data) {
+  const hasData = data.projects.length > 0 || data.entries.length > 0;
+  const host = NEW_ORIGIN.replace("https://", "");
+  return el("section", { className: "moved-banner", attrs: { "aria-labelledby": "moved-title" } }, [
+    el("h2", { className: "title-medium", text: "Time Tracker has a new address", attrs: { id: "moved-title" } }),
+    el("p", {
+      className: "body-medium",
+      text: hasData
+        ? `It now lives at ${host}. Move your projects and entries there in one tap. Everything here stays as a backup.`
+        : `It now lives at ${host}.`,
+    }),
+    hasData
+      ? el("button", { className: "filled-button", text: "Move my data", attrs: { type: "button", id: "move-data" } })
+      : el("a", { className: "filled-button", text: "Open the new address", attrs: { href: NEW_ORIGIN } }),
+  ]);
+}
+
+// On the new address, imports data handed over from the old one, then removes it from the URL.
+function receiveHandoff() {
+  if (!location.hash.startsWith(HANDOFF_PREFIX)) return;
+  const encoded = location.hash.slice(HANDOFF_PREFIX.length);
+  history.replaceState(null, "", location.pathname + location.search);
+  try {
+    const { projects, entries } = store.importData(decodeHandoff(encoded));
+    pageNotice = `Moved ${projects} ${projects === 1 ? "project" : "projects"} and ${entries} ${entries === 1 ? "entry" : "entries"}. Use this address from now on.`;
+  } catch (err) {
+    pageError = err.message;
+  }
 }
 
 function exportJson() {
@@ -306,6 +340,7 @@ function render() {
   const projectId = currentProjectId();
   const content = projectId ? renderProject(data, projectId) : renderHome(data);
   if (pageError) content.unshift(el("p", { className: "error-text", text: pageError, attrs: { role: "alert" } }));
+  if (pageNotice) content.unshift(el("p", { className: "notice body-medium", text: pageNotice, attrs: { role: "status" } }));
   $("view").replaceChildren(...content);
 }
 
@@ -494,6 +529,11 @@ $("view").addEventListener("click", (event) => {
     return;
   }
 
+  if (event.target.closest("#move-data")) {
+    location.href = handoffUrl(store.exportData());
+    return;
+  }
+
   const toggle = event.target.closest("[data-toggle]");
   if (toggle) {
     const key = toggle.dataset.toggle;
@@ -611,7 +651,10 @@ $("entry-dialog").addEventListener("close", () => {
 
 window.addEventListener("hashchange", () => {
   pageError = "";
+  pageNotice = "";
+  receiveHandoff();
   render();
 });
 
+receiveHandoff();
 render();

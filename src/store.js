@@ -10,7 +10,53 @@ const DATE_PATTERN = /^\d{4}-\d{2}-\d{2}$/;
 export const DUPLICATE_DAY_MESSAGE =
   "This project already has an entry for that day. Edit that entry instead.";
 
+export const NOT_EMPTY_MESSAGE = "This browser already has Time Tracker data, so nothing was imported.";
+export const INVALID_IMPORT_MESSAGE = "That isn't a valid Time Tracker export.";
+
 const EMPTY = { projects: [], entries: [] };
+
+// Checks exported JSON before it is stored: shapes, real project references, valid hours,
+// and one entry per project per day. Throws INVALID_IMPORT_MESSAGE on any problem.
+export function parseExport(json) {
+  const fail = () => {
+    throw new Error(INVALID_IMPORT_MESSAGE);
+  };
+  let data;
+  try {
+    data = JSON.parse(json);
+  } catch {
+    fail();
+  }
+  if (!data || !Array.isArray(data.projects) || !Array.isArray(data.entries)) fail();
+
+  const projectIds = new Set();
+  for (const p of data.projects) {
+    if (typeof p?.id !== "string" || typeof p.name !== "string" || !p.name.trim() || typeof p.createdAt !== "number") fail();
+    if (projectIds.has(p.id)) fail();
+    projectIds.add(p.id);
+  }
+
+  const ids = new Set();
+  const days = new Set();
+  for (const e of data.entries) {
+    if (typeof e?.id !== "string" || ids.has(e.id) || !projectIds.has(e.projectId)) fail();
+    if (typeof e.note !== "string" || typeof e.createdAt !== "number") fail();
+    try {
+      validateEntry(e);
+    } catch {
+      fail();
+    }
+    const day = `${e.projectId}|${e.date}`;
+    if (days.has(day)) fail();
+    ids.add(e.id);
+    days.add(day);
+  }
+
+  return {
+    projects: data.projects.map(({ id, name, createdAt }) => ({ id, name, createdAt })),
+    entries: data.entries.map(({ id, projectId, date, minutes, note, createdAt }) => ({ id, projectId, date, minutes, note, createdAt })),
+  };
+}
 
 export function isRealDate(value) {
   if (!DATE_PATTERN.test(value)) return false;
@@ -119,6 +165,15 @@ export function createStore(storage, now = () => Date.now(), makeId = () => cryp
     return JSON.stringify(getData(), null, 2);
   }
 
+  // Imports only into an empty store, so it can never overwrite or mix with existing entries.
+  function importData(json) {
+    const current = getData();
+    if (current.projects.length || current.entries.length) throw new Error(NOT_EMPTY_MESSAGE);
+    const data = parseExport(json);
+    save(data);
+    return { projects: data.projects.length, entries: data.entries.length };
+  }
+
   return {
     getData,
     findEntry,
@@ -128,5 +183,6 @@ export function createStore(storage, now = () => Date.now(), makeId = () => cryp
     deleteEntry,
     listEntries,
     exportData,
+    importData,
   };
 }

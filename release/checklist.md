@@ -9,6 +9,6 @@ Run through this before every deploy.
 - [ ] Layout checked at a phone width (about 360px) in browser dev tools, including the + button not covering the last entry.
 - [ ] Acceptance criteria in `03-requirements/` still match the behaviour.
 - [ ] `release/changelog.md` has an entry for this version.
-- [ ] Commit and push to the main branch. Cloudflare redeploys `main` automatically (https://time-tracker.mohamed-osama-795.workers.dev).
-- [ ] Check the live URL responds: `curl -I https://time-tracker.mohamed-osama-795.workers.dev`.
+- [ ] Commit and push to the main branch. Cloudflare redeploys `main` automatically, to https://time.mohamedyoussef.dev and the old workers.dev address.
+- [ ] Check the live URL responds: `curl -I https://time.mohamedyoussef.dev`.
 - [ ] Open the live URL on a phone and add one entry.
