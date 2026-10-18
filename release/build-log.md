@@ -8,6 +8,7 @@ How this app grew, one small release at a time: what triggered each change, what
 | 0.1.0 | Oct 13 | Manual hours entry, published | Real use didn't match a timer |
 | 0.2.0 | Oct 18 | Moved to time.mohamedyoussef.dev, one-tap data move | New domain, without losing data |
 | 0.2.1 | Oct 18 | Copy and paste move for iPhone home-screen icons | The first move didn't reach the new icon |
+| 0.2.2 | Oct 18 | No accidental zoom; bigger − and + | "Taps feel unresponsive, so I tap twice and it zooms" |
 
 ---
 
@@ -33,3 +34,15 @@ How this app grew, one small release at a time: what triggered each change, what
 **Decision:** use the one thing every app on the phone shares, the clipboard. **Copy my data** on the old address; a **Paste your data** box on the new address while it's empty. It accepts the move link, the bare code, or exported JSON. If the clipboard is blocked, the link is shown to copy by hand.
 **Bug caught before shipping:** the hidden backup text box was showing because the text-box styling overrode `hidden`.
 **Outcome:** the move worked on the phone, and all history was kept.
+
+## 0.2.2: No accidental zoom, bigger buttons (2026-10-18)
+**Trigger:** "When I click in the text box to enter time, or the + and − icons, they're sometimes not very responsive, so I end up touching the screen twice, and it zooms in."
+**Diagnosis:** three possible causes were checked.
+1. **Tap delay (the main cause).** Without opting out, iPhone browsers wait briefly after each tap to see if a double tap ("double-tap to zoom") is coming. Taps felt slow, and a second tap zoomed.
+2. **Zoom on focus.** iPhone zooms into text boxes under 16 px. The hours box was already 16 px, but the move's paste box was 14 px.
+3. **Small targets.** − and + were 40 px, under Material's 48 px minimum.
+
+**Decision:** `touch-action: manipulation` for the whole app, which removes the tap delay and double-tap zoom. **Pinch-to-zoom was deliberately kept.** The common shortcut (`user-scalable=no` / `maximum-scale=1`) was rejected because it blocks zoom for people who need it. − and + became 48 px, and the paste box 16 px.
+**Bug caught in testing:** with 48 px buttons, + stuck out past the dialog edge on a 320 px phone. The hours box now takes the remaining space and the gaps tightened slightly.
+**Checked:** in a browser, every text field is 16 px or more, the buttons measure 48 × 48, and the + button fits inside the dialog at 320 px and 375 px. Tests still pass (44).
+

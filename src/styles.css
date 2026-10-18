@@ -1,5 +1,9 @@
 /* Material Design 3 (baseline) colour roles, type scale, shape, and elevation, in plain CSS. */
 
+/* Taps respond immediately and a quick second tap (for example on - and +) never zooms the page.
+   Pinch-to-zoom still works, so the page stays zoomable for anyone who needs it. */
+html { touch-action: manipulation; }
+
 :root {
   color-scheme: light;
 
@@ -234,7 +238,7 @@ button, .text-button, .filled-button, .outlined-button {
   width: 100%;
   margin: 0 0 12px;
   padding: 10px 12px;
-  font: 14px/20px monospace;
+  font: 16px/22px monospace; /* 16 px or larger, so iPhone doesn't zoom in when the box is tapped */
   color: var(--on-surface);
   background: var(--surface);
   border: 1px solid var(--outline);
@@ -655,12 +659,14 @@ dialog::backdrop { background: rgba(0, 0, 0, 0.4); }
 .hours-row {
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: 12px;
   margin-bottom: 16px;
 }
 
+/* Takes the space the buttons leave, so the row fits the smallest phones. */
 .hours-field {
-  flex: 0 0 50%;
+  flex: 1 1 auto;
+  min-width: 0;
   margin-bottom: 0;
 }
 
@@ -670,7 +676,14 @@ dialog::backdrop { background: rgba(0, 0, 0, 0.4); }
 
 .stepper-buttons {
   display: flex;
-  gap: 16px;
+  flex: none;
+  gap: 8px;
+}
+
+/* 48 px touch targets (the Material minimum) for the buttons tapped most often. */
+.stepper-buttons .icon-button {
+  width: 48px;
+  height: 48px;
 }
 
 .filled-button.danger {

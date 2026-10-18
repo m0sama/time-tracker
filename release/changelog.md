@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.2.2 (2026-10-18)
+- Taps respond immediately, and quick double taps (for example on − and +) no longer zoom the page. Pinch-to-zoom still works.
+- − and + are 48 px touch targets; the hours row fits down to 320 px wide.
+- The paste box uses 16 px text, so iPhone doesn't zoom when it's tapped.
+
 ## 0.2.1 (2026-10-18)
 - Fix for iPhone home-screen icons, which keep their own storage: **Copy my data** on the old address, and a **Paste your data** box on the new address while it's empty.
 

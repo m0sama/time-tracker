@@ -66,7 +66,9 @@
 
 ## Layout and style
 - Follows Material Design 3 (see `02-strategy/decisions/005-material-design-3.md`).
-- Usable at 360px width with no horizontal scrolling.
+- Usable at 360px width with no horizontal scrolling. The entry dialog's hours row fits down to 320px.
+- On a phone, taps register immediately, and tapping quickly (for example on − and +) never zooms the page. Pinch-to-zoom still works.
+- The − and + buttons are at least 48 × 48 px. Text boxes use at least 16px text, so iPhone doesn't zoom when one is tapped.
 - The + button does not cover the last list item.
 - Text is readable in both light and dark system themes.
 
