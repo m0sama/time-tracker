@@ -14,6 +14,7 @@ The portfolio domain mohamedyoussef.dev is now owned, and apps live on its subdo
 - Serve the app at **https://time.mohamedyoussef.dev**, and keep the `workers.dev` address running.
 - On the `workers.dev` address only, the home page shows a "new address" banner with a **Move my data** button. It opens `https://time.mohamedyoussef.dev/#import=<data>`, with the export encoded as base64url in the URL fragment. Browsers never send the fragment to a server.
 - The new address imports the data only if its storage is empty, validates it first (`parseExport` in `store.js`), and then removes it from the URL.
+- **Home-screen icons (added 2026-10-18 after the first move failed on an iPhone):** on iOS, each home-screen web app has its own storage, separate from the browser. A link opened from the old icon lands in a browser, not in the new icon. So the old address also offers **Copy my data**, which copies the move link to the clipboard, and the new address shows a **Paste your data** box while it is empty. It accepts the move link, the bare code, or an exported JSON file's text (`pastedToJson` in `move.js`). If the clipboard is blocked, the link is shown in a text box to copy by hand.
 - Nothing on the old address is deleted. It stays as a backup.
 
 ## Consequences

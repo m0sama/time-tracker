@@ -227,6 +227,22 @@ button, .text-button, .filled-button, .outlined-button {
 .moved-banner h2 { margin: 0 0 4px; }
 .moved-banner p { margin: 0 0 12px; }
 .moved-banner .filled-button { text-decoration: none; display: inline-flex; }
+.banner-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+.banner-hint { margin: 10px 0 0 !important; font-size: 13px; line-height: 18px; opacity: 0.85; }
+.moved-banner textarea {
+  display: block;
+  width: 100%;
+  margin: 0 0 12px;
+  padding: 10px 12px;
+  font: 14px/20px monospace;
+  color: var(--on-surface);
+  background: var(--surface);
+  border: 1px solid var(--outline);
+  border-radius: var(--radius-s);
+  resize: vertical;
+}
+.moved-banner .copy-fallback { margin: 12px 0 0; }
+.moved-banner textarea[hidden] { display: none; }
 
 .notice {
   margin: 0 0 12px;

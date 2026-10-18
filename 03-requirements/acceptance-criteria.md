@@ -54,6 +54,8 @@
 ## Moving to the new address
 - On the workers.dev address, the home page shows a banner with the new address. With data present, it has a **Move my data** button; without data, a link to the new address.
 - **Move my data** opens the new address with all projects and entries, and they appear there unchanged.
+- **Copy my data** copies a move link to the clipboard and confirms it. If the clipboard is unavailable, the link appears in a text box to copy by hand.
+- While the new address has no projects, it shows a **Paste your data** box. Pasting the move link, the bare code, or exported JSON and tapping **Import** brings in all projects and entries unchanged. This works inside an iPhone home-screen icon.
 - The new address imports only into empty storage. If it already has data, nothing is imported and a message says so.
 - Invalid handed-over data is rejected with a message, and nothing is stored.
 - After an import, the data is removed from the address bar.

@@ -1,7 +1,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { createStore, INVALID_IMPORT_MESSAGE, NOT_EMPTY_MESSAGE } from "../src/store.js";
-import { HANDOFF_PREFIX, NEW_ORIGIN, decodeHandoff, encodeHandoff, handoffUrl, isOldAddress } from "../src/move.js";
+import { HANDOFF_PREFIX, NEW_ORIGIN, decodeHandoff, encodeHandoff, handoffUrl, isOldAddress, pastedToJson } from "../src/move.js";
 
 function memoryStorage() {
   const map = new Map();
@@ -63,6 +63,32 @@ test("import rejects malformed or inconsistent exports and stores nothing", () =
   for (const json of bad) {
     const target = createStore(memoryStorage());
     assert.throws(() => target.importData(json), { message: INVALID_IMPORT_MESSAGE }, json.slice(0, 40));
+    assert.deepEqual(target.getData(), { projects: [], entries: [] });
+  }
+});
+
+test("pasted move link, bare code, or exported JSON all import the same data", () => {
+  const source = storeWithData();
+  const json = source.exportData();
+  const link = handoffUrl(json);
+  const pastes = [
+    link,
+    `  ${link}\n`,
+    link.split(HANDOFF_PREFIX)[1],
+    link.split(HANDOFF_PREFIX)[1].replace(/(.{20})/g, "$1\n"), // wrapped across lines
+    json,
+  ];
+  for (const text of pastes) {
+    const target = createStore(memoryStorage());
+    target.importData(pastedToJson(text));
+    assert.deepEqual(target.getData(), source.getData());
+  }
+});
+
+test("pasting junk gives the invalid-export message and stores nothing", () => {
+  for (const text of ["hello", "", "https://example.com", "#import=!!!"]) {
+    const target = createStore(memoryStorage());
+    assert.throws(() => target.importData(pastedToJson(text)), { message: INVALID_IMPORT_MESSAGE }, text);
     assert.deepEqual(target.getData(), { projects: [], entries: [] });
   }
 });

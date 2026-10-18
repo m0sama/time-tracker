@@ -1,5 +1,5 @@
 import { createStore } from "./store.js";
-import { HANDOFF_PREFIX, NEW_ORIGIN, decodeHandoff, handoffUrl, isOldAddress } from "./move.js";
+import { HANDOFF_PREFIX, NEW_ORIGIN, decodeHandoff, handoffUrl, isOldAddress, pastedToJson } from "./move.js";
 import {
   aggregateEntries,
   buildMonthGrid,
@@ -95,6 +95,7 @@ function renderHome(data) {
 
   return [
     ...(isOldAddress(location.hostname) ? [movedBanner(data)] : []),
+    ...(!isOldAddress(location.hostname) && data.projects.length === 0 ? [pasteCard()] : []),
     el("h1", { className: "headline-small", text: "Projects" }),
     form,
     ...(data.projects.length === 0
@@ -122,10 +123,46 @@ function movedBanner(data) {
         ? `It now lives at ${host}. Move your projects and entries there in one tap. Everything here stays as a backup.`
         : `It now lives at ${host}.`,
     }),
-    hasData
-      ? el("button", { className: "filled-button", text: "Move my data", attrs: { type: "button", id: "move-data" } })
-      : el("a", { className: "filled-button", text: "Open the new address", attrs: { href: NEW_ORIGIN } }),
+    ...(hasData
+      ? [
+          el("div", { className: "banner-actions" }, [
+            el("button", { className: "filled-button", text: "Copy my data", attrs: { type: "button", id: "copy-data" } }),
+            el("button", { className: "outlined-button", text: "Move my data", attrs: { type: "button", id: "move-data" } }),
+          ]),
+          el("p", {
+            className: "body-small banner-hint",
+            text: "Using a home-screen icon? Tap Copy my data, open the new address from its own icon, and paste it there. Move my data works in a regular browser tab.",
+          }),
+          el("textarea", { className: "copy-fallback", attrs: { id: "copy-fallback", readonly: "", rows: "3", hidden: "", "aria-label": "Your data to copy" } }),
+        ]
+      : [el("a", { className: "filled-button", text: "Open the new address", attrs: { href: NEW_ORIGIN } })]),
   ]);
+}
+
+// Shown on the new address while it is empty: paste data copied from the old address.
+function pasteCard() {
+  return el("form", { className: "moved-banner", attrs: { id: "paste-form", "aria-labelledby": "paste-title" } }, [
+    el("h2", { className: "title-medium", text: "Moving from the old address?", attrs: { id: "paste-title" } }),
+    el("p", { className: "body-medium", text: "On the old address, tap Copy my data. Then paste it here." }),
+    el("textarea", { attrs: { id: "paste-input", rows: "3", required: "", placeholder: "Paste your data", "aria-label": "Paste your data" } }),
+    el("button", { className: "filled-button", text: "Import", attrs: { type: "submit" } }),
+  ]);
+}
+
+async function copyData() {
+  const link = handoffUrl(store.exportData());
+  try {
+    await navigator.clipboard.writeText(link);
+    pageNotice = "Copied. Now open the new address and paste it into the box there.";
+    render();
+  } catch {
+    // Clipboard blocked: show the text so it can be selected and copied by hand.
+    const box = $("copy-fallback");
+    box.value = link;
+    box.hidden = false;
+    box.focus();
+    box.select();
+  }
 }
 
 // On the new address, imports data handed over from the old one, then removes it from the URL.
@@ -529,6 +566,11 @@ $("view").addEventListener("click", (event) => {
     return;
   }
 
+  if (event.target.closest("#copy-data")) {
+    copyData();
+    return;
+  }
+
   if (event.target.closest("#move-data")) {
     location.href = handoffUrl(store.exportData());
     return;
@@ -647,6 +689,20 @@ $("entry-dialog").addEventListener("keydown", (event) => {
 $("entry-dialog").addEventListener("close", () => {
   editingId = null;
   setCalendarOpen(false);
+});
+
+$("view").addEventListener("submit", (event) => {
+  if (event.target.id !== "paste-form") return;
+  event.preventDefault();
+  pageError = "";
+  pageNotice = "";
+  try {
+    const { projects, entries } = store.importData(pastedToJson($("paste-input").value));
+    pageNotice = `Imported ${projects} ${projects === 1 ? "project" : "projects"} and ${entries} ${entries === 1 ? "entry" : "entries"}.`;
+  } catch (err) {
+    pageError = err.message;
+  }
+  render();
 });
 
 window.addEventListener("hashchange", () => {

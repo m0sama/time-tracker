@@ -22,6 +22,20 @@ export function decodeHandoff(encoded) {
   return new TextDecoder().decode(Uint8Array.from(binary, (c) => c.charCodeAt(0)));
 }
 
+// Turns whatever was pasted (a move link, the bare code, or an exported JSON file's text) into export JSON.
+// Invalid input passes through, so the store's validation produces the error message.
+export function pastedToJson(text) {
+  const trimmed = text.trim();
+  if (trimmed.startsWith("{")) return trimmed;
+  const index = trimmed.indexOf(HANDOFF_PREFIX);
+  const code = index >= 0 ? trimmed.slice(index + HANDOFF_PREFIX.length) : trimmed;
+  try {
+    return decodeHandoff(code.replace(/\s+/g, ""));
+  } catch {
+    return trimmed;
+  }
+}
+
 export function handoffUrl(json) {
   return `${NEW_ORIGIN}/${HANDOFF_PREFIX}${encodeHandoff(json)}`;
 }
