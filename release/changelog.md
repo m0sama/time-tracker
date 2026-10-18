@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.2.3 (2026-10-18)
+- Opening the entry dialog no longer pops open the Project list on iPhone, so the first tap goes straight to the hours box. Focus starts on the dialog title.
+
 ## 0.2.2 (2026-10-18)
 - Taps respond immediately, and quick double taps (for example on − and +) no longer zoom the page. Pinch-to-zoom still works.
 - − and + are 48 px touch targets; the hours row fits down to 320 px wide.

@@ -499,6 +499,9 @@ function openEntryDialog({ entry = null, projectId = null, date = null } = {}) {
   $("entry-delete").hidden = !entry;
   $("entry-error").textContent = "";
   $("entry-dialog").showModal();
+  // Start on the title, not the first field: on iPhone, focusing the Project dropdown pops its
+  // list open, so the first tap would only close it. Screen readers announce the title.
+  $("entry-title").focus();
 }
 
 // Clicking a day opens its existing entry if there is one, otherwise a new entry for that date.

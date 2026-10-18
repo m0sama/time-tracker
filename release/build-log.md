@@ -9,6 +9,7 @@ How this app grew, one small release at a time: what triggered each change, what
 | 0.2.0 | Oct 18 | Moved to time.mohamedyoussef.dev, one-tap data move | New domain, without losing data |
 | 0.2.1 | Oct 18 | Copy and paste move for iPhone home-screen icons | The first move didn't reach the new icon |
 | 0.2.2 | Oct 18 | No accidental zoom; bigger − and + | "Taps feel unresponsive, so I tap twice and it zooms" |
+| 0.2.3 | Oct 18 | Dialog no longer pops open the Project list | "A bubble with the project and a check mark appears; I have to tap twice" |
 
 ---
 
@@ -45,4 +46,10 @@ How this app grew, one small release at a time: what triggered each change, what
 **Decision:** `touch-action: manipulation` for the whole app, which removes the tap delay and double-tap zoom. **Pinch-to-zoom was deliberately kept.** The common shortcut (`user-scalable=no` / `maximum-scale=1`) was rejected because it blocks zoom for people who need it. − and + became 48 px, and the paste box 16 px.
 **Bug caught in testing:** with 48 px buttons, + stuck out past the dialog edge on a 320 px phone. The hours box now takes the remaining space and the gaps tightened slightly.
 **Checked:** in a browser, every text field is 16 px or more, the buttons measure 48 × 48, and the + button fits inside the dialog at 320 px and 375 px. Tests still pass (44).
+
+## 0.2.3: The dropdown that opened itself (2026-10-18)
+**Trigger:** "When the modal loads to add a new entry, it shows a little bubble with the selected project and a check mark, as if I clicked the Project dropdown. So I have to tap twice: once to make it go away, and again to get into the time box."
+**Diagnosis:** when a dialog opens, the browser moves focus into it. The app never said where, so focus went to the first field, the Project dropdown. On iPhone, a focused dropdown opens its option list (the bubble with the check mark), and the next tap is spent closing it. Related to 0.2.2's "tap twice" report, but a different cause.
+**Decision:** start focus on the dialog's title ("Add work entry"), made focusable for this purpose. Nothing pops open, the first tap goes where it's aimed, and screen readers announce the dialog by name, which is the recommended accessible pattern for dialogs.
+**Checked:** in a browser, opening the dialog from the home page and from a project page put focus on the title, with the right project preselected, and one tap on the hours box focused it directly. Tests still pass (44). The iPhone dropdown itself can only be confirmed on the phone.
 
